@@ -1,0 +1,100 @@
+version: '3'
+services:
+  api-gateway:
+    build: ./API-GATEWAY
+    container_name: healtmatch-api-gateway
+    ports:
+      - "8000:8000"
+    networks:
+      - healtmatch-network
+
+  auth:
+    build: ./Auth
+    container_name: healtmatch-auth-service
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=sqlite:///./auth.db
+    networks:
+      - healtmatch-network
+
+  booking:
+    build: ./Booking
+    container_name: healtmatch-booking-service
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=sqlite:///./booking.db
+    networks:
+      - healtmatch-network
+
+  catalog:
+    build: ./Catalog
+    container_name: healtmatch-catalog-service
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=sqlite:///./catalog.db
+    networks:
+      - healtmatch-network
+
+  notification:
+    build: ./Notification
+    container_name: healtmatch-notification-service
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=sqlite:///./notification.db
+    networks:
+      - healtmatch-network
+
+  payment:
+    build: ./Payment
+    container_name: healtmatch-payment-service
+    ports:
+      - "8005:8005"
+    environment:
+      - DATABASE_URL=sqlite:///./payment.db
+    networks:
+      - healtmatch-network
+
+  user:
+    build: ./Users
+    container_name: healtmatch-users-service
+    ports:
+      - "8006:8006"
+    environment:
+      - DATABASE_URL=sqlite:///./user.db
+    networks:
+      - healtmatch-network
+
+  web:
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    build:
+      context: ./docker-react
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - /app/node_modules
+      - ./docker-react:/app
+    networks:
+      - healtmatch-network
+
+  tests:
+    stdin_open: true
+    build:
+      context: ./docker-react
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - ./docker-react:/app
+    command: ['npm', 'run', 'test']
+    networks:
+      - healtmatch-network
+
+networks:
+  healtmatch-network:
+    driver: bridge
