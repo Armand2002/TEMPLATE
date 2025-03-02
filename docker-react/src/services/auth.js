@@ -52,6 +52,38 @@ export const login = async (email, password, userType) => {
     }
   };
   
+
+// Registrazione utente
+export const register = async (userData) => {
+  try {
+    console.log('Registering user:', userData);
+    
+    // In produzione, questa sarebbe una vera chiamata API
+    // Simula una risposta dal server dopo 1 secondo
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Simulazione di registrazione avvenuta con successo
+    const response = {
+      success: true,
+      message: "Registrazione completata con successo!",
+      user: {
+        id: Math.floor(Math.random() * 10000),
+        name: `${userData.name} ${userData.surname}`,
+        email: userData.email,
+        userType: userData.userType
+      }
+    };
+    
+    // In un'applicazione reale, qui connetteresti con il backend
+    // e invieresti i dati, incluso il file del certificato se presente
+    
+    return response;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw new Error('Si è verificato un errore durante la registrazione. Riprova.');
+  }
+};
+
   // Logout
   export const logout = () => {
     localStorage.removeItem('authUser');

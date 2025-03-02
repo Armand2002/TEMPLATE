@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/Home';
 import Login from './pages/Login';
+import Register from './pages/Register'; // Aggiungi questa importazione
 import { isAuthenticated } from './services/auth';
 import './index.css';
 
@@ -24,6 +25,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} /> {/* Aggiungi questa rotta */}
         <Route 
           path="/dashboard/paziente" 
           element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
