@@ -12,20 +12,20 @@ import CtaSection from '../components/home/CtaSection';
 
 const HomePage = () => {
   return (
-    
-      
-      
-        
-        
-        
-        
-        
-        
-        
-        
-      
-      
-    
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main>
+        <HeroSection />
+        <SpecialtiesSection />
+        <WhyChooseUsSection />
+        <FeaturedDoctorsSection />
+        <HowItWorksSection />
+        <MobileAppSection />
+        <TestimonialsSection />
+        <CtaSection />
+      </main>
+      <Footer />
+    </div>
   );
 };
 
