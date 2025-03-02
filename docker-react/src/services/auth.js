@@ -50,36 +50,35 @@ export const login = async (email, password, userType) => {
   // Ottieni dati dell'utente corrente
   export const getCurrentUser = () => {
     const userString = localStorage.getItem('authUser');
-    if (!userString) return null;
+    if (!userString) return { userType: 'guest' }; // valore predefinito
     try {
       return JSON.parse(userString);
     } catch (e) {
       console.error('Error parsing user data', e);
-      return null;
+      return { userType: 'guest' }; // valore predefinito in caso di errore
     }
   };
   
-
-// Registrazione utente
-export const register = async (userData) => {
-  try {
-    console.log('Registering user:', userData);
+  // Registrazione utente
+  export const register = async (userData) => {
+    try {
+      console.log('Registering user:', userData);
     
-    // In produzione, questa sarebbe una vera chiamata API
-    // Simula una risposta dal server dopo 1 secondo
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      // In produzione, questa sarebbe una vera chiamata API
+      // Simula una risposta dal server dopo 1 secondo
+      await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Simulazione di registrazione avvenuta con successo
-    const response = {
-      success: true,
-      message: "Registrazione completata con successo!",
-      user: {
-        id: Math.floor(Math.random() * 10000),
-        name: `${userData.name} ${userData.surname}`,
-        email: userData.email,
-        userType: userData.userType
-      }
-    };
+      // Simulazione di registrazione avvenuta con successo
+      const response = {
+        success: true,
+        message: "Registrazione completata con successo!",
+        user: {
+          id: Math.floor(Math.random() * 10000),
+          name: `${userData.name} ${userData.surname}`,
+          email: userData.email,
+          userType: userData.userType
+        }
+      };
     
     // In un'applicazione reale, qui connetteresti con il backend
     // e invieresti i dati, incluso il file del certificato se presente

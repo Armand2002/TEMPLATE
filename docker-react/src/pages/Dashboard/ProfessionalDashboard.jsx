@@ -1,3 +1,4 @@
+// File: TEMPLATE/docker-react/src/pages/Dashboard/ProfessionalDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardHeader from '../../components/dashboard/common/DashboardHeader';
@@ -13,9 +14,9 @@ const ProfessionalDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [user, setUser] = useState(null);
-  const [notifications, setNotifications] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [patients, setPatients] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
@@ -25,27 +26,20 @@ const ProfessionalDashboard = () => {
       return;
     }
     
-    // Carico i dati dell'utente corrente
     const currentUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-    if (currentUser.userType !== 'professionista') {
-      navigate('/login');
-      return;
-    }
-    
     setUser(currentUser);
     
-    // Carico gli appuntamenti
+    // Carico i dati
     const loadData = async () => {
       setIsLoading(true);
       try {
-        // In una app reale, queste sarebbero chiamate API separate
+        // Carica appuntamenti
         const appointmentsData = await getAppointments();
         setAppointments(appointmentsData);
         
-        // Estraggo i pazienti unici dagli appuntamenti
+        // Estrai pazienti dagli appuntamenti
         const uniquePatients = [];
         const patientIds = new Set();
-        
         appointmentsData.forEach(app => {
           if (!patientIds.has(app.patientId)) {
             patientIds.add(app.patientId);
@@ -56,10 +50,9 @@ const ProfessionalDashboard = () => {
             });
           }
         });
-        
         setPatients(uniquePatients);
         
-        // Carico notifiche
+        // Simula notifiche
         setNotifications([
           { id: 1, message: 'Nuovo appuntamento', date: '2025-03-03' },
           { id: 2, message: 'Messaggio da paziente', date: '2025-03-02' }
@@ -81,10 +74,7 @@ const ProfessionalDashboard = () => {
   
   const handleUpdateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
-      // Aggiorniamo lo stato dell'appuntamento
       await updateAppointmentStatus(appointmentId, newStatus);
-      
-      // Aggiorniamo lo stato locale
       setAppointments(appointments.map(app => 
         app.id === appointmentId ? { ...app, status: newStatus } : app
       ));
@@ -92,12 +82,18 @@ const ProfessionalDashboard = () => {
       console.error('Error updating appointment:', error);
     }
   };
-  
+
+  // Renderer condizionale in base allo stato di caricamento
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Caricamento dashboard...</p>
+      </div>
+    );
+  }
+
+  // Determina quale tab mostrare
   const renderContent = () => {
-    if (isLoading) {
-      return <div className="flex justify-center items-center h-64">Caricamento...</div>;
-    }
-    
     switch(activeTab) {
       case 'overview':
         return (
@@ -123,13 +119,9 @@ const ProfessionalDashboard = () => {
           <SettingsTab />
         );
       default:
-        return <div>Seleziona una sezione dal menu laterale</div>;
+        return <div>Seleziona una sezione</div>;
     }
   };
-
-  if (!user) {
-    return null; // Non rendiamo nulla finché non carichiamo l'utente
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -137,8 +129,8 @@ const ProfessionalDashboard = () => {
         user={user}
         notifications={notifications}
         onLogout={handleLogout}
-        title="Dashboard Professionista"
-        subtitle={`Benvenuto, Dr. ${user.name}`}
+        title="Dashboard Professionista" 
+        subtitle={`Benvenuto, Dr. ${user?.name || ''}`}
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

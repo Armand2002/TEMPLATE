@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 const UserMenu = ({ user, onLogout }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  
-  // Chiudi dropdown quando viene cliccato altrove
+
+  // Chiudi il dropdown quando si clicca fuori
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -19,13 +19,15 @@ const UserMenu = ({ user, onLogout }) => {
     };
   }, []);
 
+  if (!user) return null;
+
   return (
     <div className="relative" ref={dropdownRef}>
       <div 
         className="h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center cursor-pointer"
         onClick={() => setShowDropdown(!showDropdown)}
       >
-        {user?.name?.charAt(0) || 'U'}
+        {user.name?.charAt(0) || 'U'}
       </div>
       
       {showDropdown && (

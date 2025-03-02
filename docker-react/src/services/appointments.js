@@ -1,9 +1,7 @@
-/**
- * Servizio per la gestione degli appuntamenti
- */
-
-// Dati di esempio
-const mockAppointments = [
+// Funzione per ottenere gli appuntamenti (mock per test)
+export const getAppointments = async () => {
+  // Dati di esempio
+  const mockAppointments = [
     { 
       id: 1, 
       patientId: 1,
@@ -17,8 +15,8 @@ const mockAppointments = [
     { 
       id: 2,
       patientId: 2,
-      patientName: 'Anna Verdi', 
-      serviceName: 'Elettrocardiogramma', 
+      patientName: 'Mario Mastrulli', 
+      serviceName: 'Psiconalisi', 
       date: '03/03/2025', 
       time: '11:30', 
       status: 'pending' 
@@ -43,26 +41,19 @@ const mockAppointments = [
     }
   ];
   
-  // Funzione per ottenere gli appuntamenti
-  export const getAppointments = async () => {
-    // In un'app reale, questa sarebbe una chiamata API
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockAppointments);
-      }, 500);
-    });
-  };
-  
-  // Funzione per aggiornare lo stato di un appuntamento
-  export const updateAppointmentStatus = async (appointmentId, newStatus) => {
-    // In un'app reale, questa sarebbe una chiamata API
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const updatedAppointment = mockAppointments.find(a => a.id === appointmentId);
-        if (updatedAppointment) {
-          updatedAppointment.status = newStatus;
-        }
-        resolve(updatedAppointment);
-      }, 500);
-    });
-  };
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockAppointments);
+    }, 500);
+  });
+};
+
+// Funzione per aggiornare lo stato di un appuntamento
+export const updateAppointmentStatus = async (appointmentId, newStatus) => {
+  // In un'app reale, questa sarebbe una chiamata API
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ id: appointmentId, status: newStatus });
+    }, 500);
+  });
+};

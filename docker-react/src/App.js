@@ -32,7 +32,7 @@ function App() {
         />
         <Route 
           path="/dashboard/professionista" 
-          element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
+          element={<ProfessionalDashboard />} // Per test, rimuovi temporaneamente il ProtectedRoute
         />
         <Route path="*" element={<div className="p-8">Pagina non trovata</div>} />
       </Routes>

@@ -1,9 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import { Bell, Settings } from 'lucide-react';
 import UserMenu from './UserMenu';
 
 const DashboardHeader = ({ user, notifications, onLogout, title, subtitle }) => {
+  if (!user) return null; // Protezione contro casi in cui l'utente è null
+  
   return (
     <div className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
