@@ -40,6 +40,13 @@ export const login = async (email, password, userType) => {
     return localStorage.getItem('authToken') !== null;
   };
   
+
+  // Verifica se l'utente è un professionista
+  export const isProfessional = () => {
+    const user = JSON.parse(localStorage.getItem('authUser') || '{}');
+    return user && user.userType === 'professionista';
+  };
+
   // Ottieni dati dell'utente corrente
   export const getCurrentUser = () => {
     const userString = localStorage.getItem('authUser');

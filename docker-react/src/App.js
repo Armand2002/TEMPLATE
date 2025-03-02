@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/Home';
 import Login from './pages/Login';
-import Register from './pages/Register'; // Aggiungi questa importazione
+import Register from './pages/Register';
+import ProfessionalDashboard from './pages/Dashboard/ProfessionalDashboard';
 import { isAuthenticated } from './services/auth';
 import './index.css';
 
@@ -15,9 +16,8 @@ const ProtectedRoute = ({ element, allowedUserType }) => {
   return authenticated && hasCorrectRole ? element : <Navigate to="/login" />;
 };
 
-// Pagine placeholder per demo
+// Pagina placeholder per il dashboard paziente
 const PatientDashboard = () => <div className="p-8">Dashboard Paziente</div>;
-const DoctorDashboard = () => <div className="p-8">Dashboard Professionista</div>;
 
 function App() {
   return (
@@ -25,14 +25,14 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> {/* Aggiungi questa rotta */}
+        <Route path="/register" element={<Register />} />
         <Route 
           path="/dashboard/paziente" 
           element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
         />
         <Route 
           path="/dashboard/professionista" 
-          element={<ProtectedRoute element={<DoctorDashboard />} allowedUserType="professionista" />} 
+          element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
         />
         <Route path="*" element={<div className="p-8">Pagina non trovata</div>} />
       </Routes>
