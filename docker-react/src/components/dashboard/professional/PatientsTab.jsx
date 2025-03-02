@@ -5,10 +5,10 @@ import PatientListItem from './PatientListItem';
 const PatientsTab = ({ patients }) => {
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Filtraggio dei pazienti
-  const filteredPatients = patients.filter(patient => 
-    searchTerm === '' || patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPatients = patients?.filter(patient => {
+    if (!searchTerm) return true;
+    return patient.name.toLowerCase().includes(searchTerm.toLowerCase());
+  }) || [];
   
   return (
     <div>
@@ -36,14 +36,16 @@ const PatientsTab = ({ patients }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredPatients.length === 0 ? (
-              <tr>
-                <td colSpan="3" className="px-6 py-8 text-center text-gray-500">Nessun paziente trovato</td>
-              </tr>
-            ) : (
+            {filteredPatients.length > 0 ? (
               filteredPatients.map(patient => (
                 <PatientListItem key={patient.id} patient={patient} />
               ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                  Nessun paziente trovato.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

@@ -2,7 +2,7 @@
  * Servizio per la gestione degli appuntamenti
  */
 
-// Dati di esempio (se non esiste già)
+// Dati di esempio
 const mockAppointments = [
     { 
       id: 1, 

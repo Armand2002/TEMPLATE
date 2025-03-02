@@ -6,19 +6,18 @@ const AppointmentsTab = ({ appointments, onUpdateStatus }) => {
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Filtraggio degli appuntamenti
-  const filteredAppointments = appointments.filter(app => {
-    // Filtraggio per stato
-    if (filter !== 'all' && app.status !== filter) return false;
-    
-    // Filtraggio per ricerca
-    if (searchTerm && !app.patientName.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !app.serviceName.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return false;
-    }
-    
-    return true;
-  });
+  const filteredAppointments = appointments
+    ?.filter(app => {
+      if (filter === 'all') return true;
+      return app.status === filter;
+    })
+    .filter(app => {
+      if (!searchTerm) return true;
+      return (
+        app.patientName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        app.serviceName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }) || [];
   
   return (
     <div>
@@ -36,45 +35,51 @@ const AppointmentsTab = ({ appointments, onUpdateStatus }) => {
         </div>
       </div>
       
-      <div className="flex mb-6">
+      <div className="flex mb-6 overflow-x-auto whitespace-nowrap">
         <button 
-          className={`mr-2 px-4 py-2 rounded-md ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+          className={`mr-2 px-4 py-2 rounded-md ${
+            filter === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'
+          }`}
           onClick={() => setFilter('all')}
         >
           Tutti
         </button>
         <button 
-          className={`mr-2 px-4 py-2 rounded-md ${filter === 'pending' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+          className={`mr-2 px-4 py-2 rounded-md ${
+            filter === 'pending' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'
+          }`}
           onClick={() => setFilter('pending')}
         >
           In attesa
         </button>
         <button 
-          className={`mr-2 px-4 py-2 rounded-md ${filter === 'confirmed' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+          className={`mr-2 px-4 py-2 rounded-md ${
+            filter === 'confirmed' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'
+          }`}
           onClick={() => setFilter('confirmed')}
         >
           Confermati
         </button>
         <button 
-          className={`px-4 py-2 rounded-md ${filter === 'completed' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+          className={`mr-2 px-4 py-2 rounded-md ${
+            filter === 'completed' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'
+          }`}
           onClick={() => setFilter('completed')}
         >
           Completati
         </button>
       </div>
       
-      {filteredAppointments.length === 0 ? (
-        <div className="text-center p-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">Nessun appuntamento trovato</p>
-        </div>
-      ) : (
-        filteredAppointments.map(appointment => (
-          <AppointmentCard 
-            key={appointment.id} 
-            appointment={appointment} 
-            onUpdateStatus={onUpdateStatus}
-          />
-        ))
+      {filteredAppointments.map(appointment => (
+        <AppointmentCard 
+          key={appointment.id} 
+          appointment={appointment} 
+          onUpdateStatus={onUpdateStatus}
+        />
+      ))}
+      
+      {filteredAppointments.length === 0 && (
+        <p className="text-center text-gray-500 py-8">Nessun appuntamento trovato.</p>
       )}
     </div>
   );

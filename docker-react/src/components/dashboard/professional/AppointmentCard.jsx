@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, User } from 'lucide-react';
 
 const AppointmentCard = ({ appointment, onUpdateStatus }) => {
   const statusColors = {
@@ -9,11 +9,13 @@ const AppointmentCard = ({ appointment, onUpdateStatus }) => {
     cancelled: 'bg-red-100 text-red-800',
   };
 
+  if (!appointment) return null;
+
   return (
     <div className="bg-white shadow-sm rounded-lg p-4 mb-4">
       <div className="flex justify-between items-start mb-3">
         <div>
-          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${statusColors[appointment.status]}`}>
+          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${statusColors[appointment.status] || 'bg-gray-100'}`}>
             {appointment.status}
           </span>
           <h3 className="text-lg font-medium">{appointment.serviceName}</h3>
