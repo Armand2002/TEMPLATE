@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; 
 import { Bell, Settings } from 'lucide-react';
 import UserMenu from './UserMenu';
 
@@ -14,7 +15,7 @@ const DashboardHeader = ({ user, notifications, onLogout, title, subtitle }) => 
           <div className="flex items-center space-x-4">
             <div className="relative">
               <Bell size={20} className="text-gray-600 cursor-pointer" />
-              {notifications.length > 0 && (
+              {notifications && notifications.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {notifications.length}
                 </span>
