@@ -1,19 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
-import PatientListItem from './PatientListItem';
+import PatientItem from './PatientItem';
+import { getPatients } from '../../../services/patient';
 
-const PatientsTab = ({ patients }) => {
+const PatientsTab = () => {
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const loadPatients = async () => {
+      try {
+        setLoading(true);
+        const data = await getPatients();
+        setPatients(data);
+      } catch (error) {
+        console.error('Error loading patients:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPatients();
+  }, []);
   
-  const filteredPatients = patients?.filter(patient => {
+  const filteredPatients = patients.filter(patient => {
     if (!searchTerm) return true;
     return patient.name.toLowerCase().includes(searchTerm.toLowerCase());
-  }) || [];
-  
+  });
+
+  if (loading) {
+    return <div className="text-center py-8">Caricamento pazienti...</div>;
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-medium">Lista Pazienti</h2>
+        <h2 className="text-lg font-medium">I miei pazienti</h2>
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input 
@@ -26,30 +49,17 @@ const PatientsTab = ({ patients }) => {
         </div>
       </div>
       
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ultima visita</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Azioni</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredPatients.length > 0 ? (
-              filteredPatients.map(patient => (
-                <PatientListItem key={patient.id} patient={patient} />
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
-                  Nessun paziente trovato.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {filteredPatients.length > 0 ? (
+        <div className="space-y-4">
+          {filteredPatients.map(patient => (
+            <PatientItem key={patient.id} patient={patient} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+          <p className="text-gray-500 mb-4">Nessun paziente trovato.</p>
+        </div>
+      )}
     </div>
   );
 };

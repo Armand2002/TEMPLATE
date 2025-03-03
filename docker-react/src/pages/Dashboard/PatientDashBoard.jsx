@@ -7,7 +7,7 @@ import AppointmentsTab from '../../components/dashboard/patient/AppointmentsTab'
 import HealthRecordsTab from '../../components/dashboard/patient/HealthRecordsTab';
 import ProfessionalsTab from '../../components/dashboard/patient/ProfessionalsTab';
 import SettingsTab from '../../components/dashboard/patient/SettingsTab';
-import { isAuthenticated, logout } from '../../services/auth';
+import { isAuthenticated, isProfessional, logout } from '../../services/auth';
 import { getAppointments } from '../../services/appointments';
 
 const PatientDashboard = () => {
@@ -19,9 +19,27 @@ const PatientDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Verifico autenticazione
+    // Verifica se l'utente è autenticato
     if (!isAuthenticated()) {
       navigate('/login');
+      return;
+    }
+    
+    // Se l'utente è un professionista, reindirizza
+    if (isProfessional()) {
+      navigate('/dashboard/professionista');
+      return;
+    }
+    
+    // Verifica se l'utente è autenticato e NON è un professionista
+    if (!isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+    
+    // Se l'utente è un professionista, reindirizza alla dashboard corretta
+    if (isProfessional()) {
+      navigate('/dashboard/professionista');
       return;
     }
     
@@ -57,15 +75,9 @@ const PatientDashboard = () => {
   };
   
   const handleCancelAppointment = async (appointmentId) => {
-    try {
-      // In una implementazione reale, qui ci sarebbe una chiamata API
-      console.log(`Cancellazione appuntamento: ${appointmentId}`);
-      
-      // Aggiorna localmente lo stato degli appuntamenti
-      setAppointments(appointments.filter(app => app.id !== appointmentId));
-    } catch (error) {
-      console.error('Error cancelling appointment:', error);
-    }
+    // Gestione cancellazione appuntamento
+    console.log(`Cancellazione appuntamento: ${appointmentId}`);
+    setAppointments(appointments.filter(app => app.id !== appointmentId));
   };
   
   // Sidebar links

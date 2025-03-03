@@ -1,40 +1,55 @@
-// In App.js, assicurati che le rotte siano configurate correttamente
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from './pages/Home';  // Cambia da './pages/Home/HomePage'
-import Login from './pages/Login';    // Cambia da './pages/Auth/Login'
-import Register from './pages/Register';  // Cambia da './pages/Auth/Register'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Importa gli stili CSS
+import HomePage from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import PatientDashboard from './pages/Dashboard/PatientDashboard';
 import ProfessionalDashboard from './pages/Dashboard/ProfessionalDashboard';
+import SearchPage from './pages/Search/index';
 import { isAuthenticated, isProfessional } from './services/auth';
-import SearchPage from './pages/Search/index'; // Se usi index.jsx nella cartella
 import './index.css';
-// Componente per rotte protette
-const ProtectedRoute = ({ element, allowedUserType }) => {
-  const user = JSON.parse(localStorage.getItem('authUser') || '{}');
-  const authenticated = isAuthenticated();
-  const hasCorrectRole = !allowedUserType || user.userType === allowedUserType;
-  
-  return authenticated && hasCorrectRole ? element : <Navigate to="/login" />;
-};
 
 function App() {
+  // Funzione per reindirizzare alla dashboard corretta
+  const DashboardRouter = () => {
+    if (!isAuthenticated()) {
+      return <Navigate to="/login" />;
+    }
+    
+    // Controlla il tipo di utente e reindirizza di conseguenza
+    return isProfessional() ? 
+      <Navigate to="/dashboard/professionista" replace /> : 
+      <Navigate to="/dashboard/paziente" replace />;
+  };
+
   return (
     <Router>
+      {/* ToastContainer per mostrare le notifiche in tutta l'app */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      
       <Routes>
+        {/* ... rotte esistenti */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<DashboardRouter />} />
+        {/* Rimuovi i reindirizzamenti circolari */}
+        <Route path="/dashboard/paziente" element={<PatientDashboard />} />
+        <Route path="/dashboard/professionista" element={<ProfessionalDashboard />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route 
-          path="/dashboard/paziente" 
-          element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
-        />
-        <Route 
-          path="/dashboard/professionista" 
-          element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
-        />
-        <Route path="*" element={<div className="p-8">Pagina non trovata</div>} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
