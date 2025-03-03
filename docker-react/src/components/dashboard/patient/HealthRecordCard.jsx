@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, Download, FileText, User } from 'lucide-react';
+import { downloadHealthRecord } from '../../../services/healthRecords';
 
 const HealthRecordCard = ({ record }) => {
   const typeColors = {
@@ -8,6 +9,17 @@ const HealthRecordCard = ({ record }) => {
     'Visita': 'bg-blue-100 text-blue-800',
     'Prescrizione': 'bg-yellow-100 text-yellow-800',
     'Altro': 'bg-gray-100 text-gray-800',
+  };
+
+  const handleDownload = async () => {
+    try {
+      await downloadHealthRecord(record.id);
+      // In un'applicazione reale, qui gestiresti il download effettivo
+      alert('Download simulato completato');
+    } catch (error) {
+      console.error('Error downloading record:', error);
+      alert('Errore durante il download');
+    }
   };
 
   return (
@@ -20,7 +32,10 @@ const HealthRecordCard = ({ record }) => {
           <h3 className="text-lg font-medium">{record.title}</h3>
         </div>
         <div className="flex space-x-2">
-          <button className="flex items-center px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+          <button 
+            onClick={handleDownload}
+            className="flex items-center px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+          >
             <Download size={14} className="mr-1" />
             <span>Scarica</span>
           </button>

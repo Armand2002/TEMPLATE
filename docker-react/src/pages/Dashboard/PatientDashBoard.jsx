@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isAuthenticated, logout } from '../../services/auth';
 import DashboardHeader from '../../components/dashboard/common/DashboardHeader';
 import Sidebar from '../../components/dashboard/common/Sidebar';
 import OverviewTab from '../../components/dashboard/patient/OverviewTab';
@@ -8,14 +7,14 @@ import AppointmentsTab from '../../components/dashboard/patient/AppointmentsTab'
 import HealthRecordsTab from '../../components/dashboard/patient/HealthRecordsTab';
 import ProfessionalsTab from '../../components/dashboard/patient/ProfessionalsTab';
 import SettingsTab from '../../components/dashboard/patient/SettingsTab';
+import { isAuthenticated, logout } from '../../services/auth';
+import { getAppointments } from '../../services/appointments';
 
 const PatientDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
-  const [healthRecords, setHealthRecords] = useState([]);
-  const [favoriteProviders, setFavoriteProviders] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -33,82 +32,13 @@ const PatientDashboard = () => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        // Simula caricamento appuntamenti
-        const mockAppointments = [
-          { 
-            id: 1, 
-            professionalName: 'Dr. Marco Rossi', 
-            specialty: 'Cardiologo',
-            serviceName: 'Visita cardiologica', 
-            date: '15/03/2025', 
-            time: '10:00', 
-            status: 'confirmed', 
-            location: 'Via Roma 123, Milano'
-          },
-          { 
-            id: 2, 
-            professionalName: 'Dr.ssa Giulia Bianchi', 
-            specialty: 'Psicologa',
-            serviceName: 'Seduta di psicoterapia', 
-            date: '20/03/2025', 
-            time: '15:30', 
-            status: 'pending',
-            location: 'Via Garibaldi 45, Milano'
-          }
-        ];
-        setAppointments(mockAppointments);
-        
-        // Simula caricamento documenti sanitari
-        const mockHealthRecords = [
-          {
-            id: 1,
-            title: 'Analisi del sangue',
-            date: '10/02/2025',
-            doctor: 'Dr. Paolo Verdi',
-            type: 'Laboratorio',
-            status: 'Completato'
-          },
-          {
-            id: 2,
-            title: 'Radiografia torace',
-            date: '20/01/2025',
-            doctor: 'Dr.ssa Sara Neri',
-            type: 'Diagnostica',
-            status: 'Completato'
-          },
-          {
-            id: 3,
-            title: 'Visita cardiologica',
-            date: '05/12/2024',
-            doctor: 'Dr. Marco Rossi',
-            type: 'Visita',
-            status: 'Completato'
-          }
-        ];
-        setHealthRecords(mockHealthRecords);
-        
-        // Simula caricamento professionisti preferiti
-        const mockFavoriteProviders = [
-          {
-            id: 1,
-            name: 'Dr. Marco Rossi',
-            specialty: 'Cardiologo',
-            rating: 4.9,
-            lastVisit: '05/12/2024'
-          },
-          {
-            id: 2,
-            name: 'Dr.ssa Giulia Bianchi',
-            specialty: 'Psicologa',
-            rating: 4.8,
-            lastVisit: '15/11/2024'
-          }
-        ];
-        setFavoriteProviders(mockFavoriteProviders);
+        // Carica appuntamenti
+        const appointmentsData = await getAppointments();
+        setAppointments(appointmentsData);
         
         // Simula notifiche
         setNotifications([
-          { id: 1, message: 'Promemoria: visita domani', date: '2025-03-14' },
+          { id: 1, message: 'Nuovo appuntamento confermato', date: '2025-03-05' },
           { id: 2, message: 'Nuovi risultati disponibili', date: '2025-03-10' }
         ]);
       } catch (error) {
@@ -138,89 +68,61 @@ const PatientDashboard = () => {
     }
   };
   
+  // Sidebar links
+  const sidebarLinks = [
+    { id: 'overview', label: 'Panoramica', icon: 'layout' },
+    { id: 'appointments', label: 'Appuntamenti', icon: 'calendar' },
+    { id: 'health-records', label: 'Documenti Sanitari', icon: 'file-text' },
+    { id: 'professionals', label: 'Professionisti', icon: 'users' },
+    { id: 'settings', label: 'Impostazioni', icon: 'settings' }
+  ];
+  
   // Renderer condizionale in base allo stato di caricamento
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Caricamento dashboard...</p>
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
-
-  // Determina quale tab mostrare
-  const renderContent = () => {
-    switch(activeTab) {
+  
+  // Renderizza il componente corretto in base alla tab attiva
+  const renderActiveTab = () => {
+    switch (activeTab) {
       case 'overview':
-        return (
-          <OverviewTab 
-            appointments={appointments}
-            healthRecords={healthRecords}
-            favoriteProviders={favoriteProviders}
-            onCancelAppointment={handleCancelAppointment}
-          />
-        );
+        return <OverviewTab onCancelAppointment={handleCancelAppointment} />;
       case 'appointments':
-        return (
-          <AppointmentsTab 
-            appointments={appointments}
-            onCancelAppointment={handleCancelAppointment}
-          />
-        );
+        return <AppointmentsTab appointments={appointments} onCancelAppointment={handleCancelAppointment} />;
       case 'health-records':
-        return (
-          <HealthRecordsTab 
-            healthRecords={healthRecords} 
-          />
-        );
+        return <HealthRecordsTab />;
       case 'professionals':
-        return (
-          <ProfessionalsTab 
-            favoriteProviders={favoriteProviders} 
-          />
-        );
+        return <ProfessionalsTab />;
       case 'settings':
-        return (
-          <SettingsTab 
-            user={user}
-          />
-        );
+        return <SettingsTab user={user} />;
       default:
-        return <div>Seleziona una sezione</div>;
+        return <OverviewTab onCancelAppointment={handleCancelAppointment} />;
     }
   };
 
-  // Personalizza le opzioni della sidebar per il paziente
-  const patientTabs = [
-    { id: 'overview', name: 'Panoramica' },
-    { id: 'appointments', name: 'I miei appuntamenti' },
-    { id: 'health-records', name: 'Documenti sanitari' },
-    { id: 'professionals', name: 'I miei professionisti' },
-    { id: 'settings', name: 'Impostazioni' }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardHeader 
-        user={user}
-        notifications={notifications}
-        onLogout={handleLogout}
-        title="Dashboard Paziente" 
-        subtitle={`Benvenuto, ${user?.name || ''}`}
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar 
+        links={sidebarLinks} 
+        activeLink={activeTab} 
+        onLinkClick={setActiveTab} 
       />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="md:w-1/4">
-            <Sidebar 
-              activeTab={activeTab} 
-              setActiveTab={setActiveTab} 
-              tabs={patientTabs}
-            />
-          </div>
-          <div className="md:w-3/4">
-            {renderContent()}
-          </div>
-        </div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <DashboardHeader 
+          user={user} 
+          notifications={notifications} 
+          onLogout={handleLogout}
+          title="Dashboard Paziente"
+        />
+        
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          {renderActiveTab()}
+        </main>
       </div>
     </div>
   );

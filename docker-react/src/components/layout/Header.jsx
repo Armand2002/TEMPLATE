@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import Logo from '../common/Logo';
 import { isAuthenticated, isProfessional, getCurrentUser } from '../../services/auth';
@@ -8,9 +8,28 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const authenticated = isAuthenticated();
   const user = getCurrentUser();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   // Determina il link della dashboard
   const dashboardLink = isProfessional() ? '/dashboard/professionista' : '/dashboard/paziente';
+
+  // Gestisce la navigazione alle sezioni dell'homepage
+  const navigateToSection = (sectionId) => {
+    // Chiude menu mobile se aperto
+    setMobileMenuOpen(false);
+    
+    // Se siamo già in homepage, scrolliamo alla sezione
+    if (location.pathname === '/') {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Altrimenti navighiamo all'homepage con il frammento
+      navigate(`/#${sectionId}`);
+    }
+  };
 
   return (
     <header className="bg-white shadow-sm">
@@ -24,10 +43,16 @@ const Header = () => {
               <Link to="/" className="text-gray-900 hover:text-blue-600 px-3 py-2 font-medium">
                 Home
               </Link>
+              {/* Link "Come funziona" per la navigazione desktop */}
+              <button 
+                onClick={() => navigateToSection('come-funziona')} 
+                className="text-gray-500 hover:text-blue-600 px-3 py-2 font-medium bg-transparent border-none cursor-pointer"
+              >
+                Come funziona
+              </button>
               <Link to="/search" className="text-gray-500 hover:text-blue-600 px-3 py-2 font-medium">
                 Cerca professionisti
               </Link>
-              {/* Rimozione del link "Per i professionisti" */}
               <Link to="/about" className="text-gray-500 hover:text-blue-600 px-3 py-2 font-medium">
                 Chi siamo
               </Link>
@@ -74,6 +99,13 @@ const Header = () => {
             >
               Home
             </Link>
+            {/* Link "Come funziona" per la navigazione mobile */}
+            <button 
+              onClick={() => navigateToSection('come-funziona')} 
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:bg-gray-50"
+            >
+              Come funziona
+            </button>
             <Link 
               to="/search" 
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:bg-gray-50"
@@ -81,7 +113,6 @@ const Header = () => {
             >
               Cerca professionisti
             </Link>
-            {/* Rimozione del link "Per i professionisti" anche dal menu mobile */}
             <Link 
               to="/about" 
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:bg-gray-50"

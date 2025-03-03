@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+// Verifica che questi percorsi siano corretti
 import HeroSection from '../components/home/HeroSection';
 import SpecialtiesSection from '../components/home/SpecialtiesSection';
 import WhyChooseUsSection from '../components/home/WhyChooseUsSection';
