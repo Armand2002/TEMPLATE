@@ -7,6 +7,7 @@ import Register from './pages/Register';  // Cambia da './pages/Auth/Register'
 import PatientDashboard from './pages/Dashboard/PatientDashboard';
 import ProfessionalDashboard from './pages/Dashboard/ProfessionalDashboard';
 import { isAuthenticated, isProfessional } from './services/auth';
+import SearchPage from './pages/Search/index'; // Se usi index.jsx nella cartella
 import './index.css';
 // Componente per rotte protette
 const ProtectedRoute = ({ element, allowedUserType }) => {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route 
           path="/dashboard/paziente" 
           element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
