@@ -41,6 +41,7 @@ export const getAppointments = async () => {
     }
   ];
   
+  // Restituiamo i dati come una Promise
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockAppointments);

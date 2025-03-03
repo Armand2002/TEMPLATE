@@ -1,12 +1,13 @@
+// In App.js, assicurati che le rotte siano configurate correttamente
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import HomePage from './pages/Home';  // Cambia da './pages/Home/HomePage'
+import Login from './pages/Login';    // Cambia da './pages/Auth/Login'
+import Register from './pages/Register';  // Cambia da './pages/Auth/Register'
+import PatientDashboard from './pages/Dashboard/PatientDashboard';
 import ProfessionalDashboard from './pages/Dashboard/ProfessionalDashboard';
-import { isAuthenticated } from './services/auth';
+import { isAuthenticated, isProfessional } from './services/auth';
 import './index.css';
-
 // Componente per rotte protette
 const ProtectedRoute = ({ element, allowedUserType }) => {
   const user = JSON.parse(localStorage.getItem('authUser') || '{}');
@@ -15,9 +16,6 @@ const ProtectedRoute = ({ element, allowedUserType }) => {
   
   return authenticated && hasCorrectRole ? element : <Navigate to="/login" />;
 };
-
-// Pagina placeholder per il dashboard paziente
-const PatientDashboard = () => <div className="p-8">Dashboard Paziente</div>;
 
 function App() {
   return (
@@ -32,7 +30,7 @@ function App() {
         />
         <Route 
           path="/dashboard/professionista" 
-          element={<ProfessionalDashboard />} // Per test, rimuovi temporaneamente il ProtectedRoute
+          element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
         />
         <Route path="*" element={<div className="p-8">Pagina non trovata</div>} />
       </Routes>
