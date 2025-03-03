@@ -2,17 +2,31 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Settings } from 'lucide-react';
 import UserMenu from './UserMenu';
+import Logo from '../../common/Logo';
 
 const DashboardHeader = ({ user, notifications, onLogout, title, subtitle }) => {
-  if (!user) return null; // Protezione contro casi in cui l'utente è null
+  if (!user) return null;
+  
+  // Determina l'URL della dashboard in base al tipo di utente
+  const dashboardUrl = user.userType === 'professionista' 
+    ? '/dashboard/professionista' 
+    : '/dashboard/paziente';
   
   return (
     <div className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{title || "Dashboard"}</h1>
-            <p className="text-gray-600">{subtitle || `Benvenuto, ${user?.name}`}</p>
+          <div className="flex items-center">
+            <div className="mr-6">
+              {/* Il Logo ora reindirizza alla dashboard corretta invece che alla homepage */}
+              <Link to={dashboardUrl}>
+                <Logo color="text-blue-600" size="text-xl" />
+              </Link>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{title || "Dashboard"}</h1>
+              <p className="text-gray-600">{subtitle || `Benvenuto, ${user?.name}`}</p>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <div className="relative">
