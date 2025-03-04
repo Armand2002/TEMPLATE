@@ -70,7 +70,7 @@ class SpecialtyInDB(SpecialtyBase):
     id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # Aggiornato da orm_mode = True
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -119,7 +119,7 @@ class UserInDB(UserBase):
     profile_image: Optional[str] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # Aggiornato da orm_mode = True
 
 class ProfessionalInDB(UserInDB):
     bio: Optional[str] = None
@@ -129,4 +129,4 @@ class ProfessionalInDB(UserInDB):
     specialties: List[SpecialtyInDB] = []
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # Aggiornato da orm_mode = True

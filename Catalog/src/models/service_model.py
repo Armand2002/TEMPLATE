@@ -100,7 +100,7 @@ class ServiceResponse(ServiceBase):
     specialties: List[str] = []
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # Aggiornato da orm_mode = True
 
 class CategoryBase(BaseModel):
     name: str
@@ -113,7 +113,7 @@ class CategoryResponse(CategoryBase):
     id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # Aggiornato da orm_mode = True
 
 class SpecialtyBase(BaseModel):
     name: str
@@ -126,4 +126,4 @@ class SpecialtyResponse(SpecialtyBase):
     id: int
     
     class Config:
-        orm_mode = True
+        from_attributes = True  # Aggiornato da orm_mode = True

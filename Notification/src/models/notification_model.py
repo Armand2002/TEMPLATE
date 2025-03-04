@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, T
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.sql import func
 import datetime
 import os
 from dotenv import load_dotenv
@@ -12,7 +13,7 @@ from typing import Optional
 load_dotenv()
 
 # Configurazione database
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./notifications.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./notification.db")
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -24,13 +25,14 @@ class Notification(Base):
     id = Column(Integer, primary_key=True, index=True)
     recipient_id = Column(Integer, nullable=False, index=True)
     sender_id = Column(Integer, nullable=True)  # Può essere null per notifiche di sistema
-    title = Column(String(100), nullable=False)
-    message = Column(Text, nullable=False)
-    type = Column(String(50), nullable=False)  # booking_confirmation, reminder, system, etc.
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    read = Column(Boolean, default=False)
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
+    type = Column(String(50), nullable=False, index=True)  # booking_confirmation, reminder, system, etc.
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    is_read = Column(Boolean, default=False)
     read_at = Column(DateTime, nullable=True)
-    metadata = Column(Text, nullable=True)  # JSON serializzato per dati aggiuntivi
+    meta_data = Column(Text, nullable=True)  # JSON serializzato per dati aggiuntivi
     
 # Schemi Pydantic per la validazione e la documentazione API
 class NotificationBase(BaseModel):

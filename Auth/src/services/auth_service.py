@@ -58,16 +58,19 @@ def refresh_token(token: str):
 def authenticate_user(email: str, password: str):
     """Autentica un utente tramite email e password."""
     db = SessionLocal()
-    user = db.query(User).filter(User.email == email).first()
-    if not user:
-        return None
-    
-    if not verify_password(password, user.hashed_password):  # Cambiato da user.password
-        return None
-    
-    # Genera il token JWT
-    token = create_access_token({"sub": user.email, "role": user.role})
-    return {"access_token": token, "user": {"id": user.id, "name": user.name, "role": user.role}}
+    try:
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            return {"error": "Credenziali non valide", "code": "invalid_credentials"}
+        
+        if not verify_password(password, user.hashed_password):
+            return {"error": "Credenziali non valide", "code": "invalid_credentials"}
+        
+        # Genera il token JWT
+        token = create_access_token({"sub": user.email, "role": user.role})
+        return {"access_token": token, "token_type": "bearer", "user": {"id": user.id, "name": user.name, "role": user.role}}
+    finally:
+        db.close()
 
 def register_user(name: str, email: str, password: str, role: str):
     """Registra un nuovo utente."""
