@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, FileText, Users, Clock } from 'lucide-react';
+import { Calendar, FileText, User, Clock } from 'lucide-react';
 import StatCard from '../common/StatCard';
 import { getAppointments } from '../../../services/appointments';
 import { getHealthRecords } from '../../../services/healthRecords';
@@ -18,7 +18,7 @@ const OverviewTab = ({ onCancelAppointment }) => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Carica i dati per la panoramica
+        // Carica i dati per la panoramica paziente
         const appointmentsData = await getAppointments();
         const healthRecordsData = await getHealthRecords();
         const professionalsData = await getFavoriteProfessionals();
@@ -40,33 +40,32 @@ const OverviewTab = ({ onCancelAppointment }) => {
     return <div className="text-center py-8">Caricamento panoramica...</div>;
   }
 
-  // Calcoli per le statistiche
+  // Calcoli per le statistiche (specifici per paziente)
   const upcomingAppointments = appointments.filter(a => a.status === 'pending' || a.status === 'confirmed');
   const completedAppointments = appointments.filter(a => a.status === 'completed');
-  const lastHealthRecord = healthRecords.length > 0 ? healthRecords[0] : null;
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-6">Panoramica</h2>
+      <h2 className="text-lg font-semibold mb-6">La mia salute</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <StatCard 
-          title="Appuntamenti in arrivo" 
+          title="Visite prenotate" 
           value={upcomingAppointments.length} 
           icon={<Calendar size={20} />}
-          color="blue" 
-        />
-        <StatCard 
-          title="Visite completate" 
-          value={completedAppointments.length} 
-          icon={<Clock size={20} />}
-          color="green" 
+          color="bg-blue-100 text-blue-800" 
         />
         <StatCard 
           title="Documenti sanitari" 
           value={healthRecords.length} 
           icon={<FileText size={20} />}
-          color="purple" 
+          color="bg-purple-100 text-purple-800" 
+        />
+        <StatCard 
+          title="Visite completate" 
+          value={completedAppointments.length} 
+          icon={<Clock size={20} />}
+          color="bg-green-100 text-green-800" 
         />
       </div>
       

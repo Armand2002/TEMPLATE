@@ -1,13 +1,14 @@
-// In App.js, assicurati che le rotte siano configurate correttamente
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from './pages/Home';  // Cambia da './pages/Home/HomePage'
-import Login from './pages/Login';    // Cambia da './pages/Auth/Login'
-import Register from './pages/Register';  // Cambia da './pages/Auth/Register'
-import PatientDashboard from './pages/Dashboard/PatientDashboard'; // Corretto da PatientDashboard.jsx a PatientDashBoard.jsx
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import HomePage from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import PatientDashboard from './pages/Dashboard/PatientDashboard';
 import ProfessionalDashboard from './pages/Dashboard/ProfessionalDashboard';
+import SearchPage from './pages/Search/index';
 import { isAuthenticated, isProfessional } from './services/auth';
-import SearchPage from './pages/Search/index'; // Se usi index.jsx nella cartella
 import './index.css';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -27,6 +28,18 @@ const ProtectedRoute = ({ element, allowedUserType }) => {
 function App() {
   return (
     <Router>
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      
       <Elements stripe={stripePromise}>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -34,14 +47,14 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/search" element={<SearchPage />} />
           <Route 
-            path="/Dashboard/paziente" 
+            path="/dashboard/paziente" 
             element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
           />
           <Route 
-            path="/Dashboard/professionista" 
+            path="/dashboard/professionista" 
             element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
           />
-          <Route path="*" element={<div className="p-8">Pagina non trovata</div>} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Elements>
     </Router>
