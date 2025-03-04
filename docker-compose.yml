@@ -5,6 +5,12 @@ services:
     container_name: healtmatch-api-gateway
     ports:
       - "8000:8000"
+    depends_on:
+      - auth
+      - booking
+      - catalog
+      - payment
+      - notification
     networks:
       - healtmatch-network
 
