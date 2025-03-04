@@ -7,10 +7,10 @@ import Logo from '../../common/Logo';
 const DashboardHeader = ({ user, notifications, onLogout, title, subtitle }) => {
   if (!user) return null;
   
-  // Determina l'URL della dashboard in base al tipo di utente
-  const dashboardUrl = user.userType === 'professionista' 
-    ? '/dashboard/professionista' 
-    : '/dashboard/paziente';
+  // Determina l'URL della Dashboard in base al tipo di utente
+  const DashboardUrl = user.userType === 'professionista' 
+    ? '/Dashboard/professionista' 
+    : '/Dashboard/paziente';
   
   return (
     <div className="bg-white shadow-sm">
@@ -18,8 +18,8 @@ const DashboardHeader = ({ user, notifications, onLogout, title, subtitle }) => 
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <div className="mr-6">
-              {/* Il Logo ora reindirizza alla dashboard corretta invece che alla homepage */}
-              <Link to={dashboardUrl}>
+              {/* Il Logo ora reindirizza alla Dashboard corretta invece che alla homepage */}
+              <Link to={DashboardUrl}>
                 <Logo color="text-blue-600" size="text-xl" />
               </Link>
             </div>

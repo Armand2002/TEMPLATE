@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DashboardHeader from '../../components/dashboard/common/DashboardHeader';
+import DashboardHeader from '../../components/dashboard/common/DashboardHeader'; // Corretto "DashBoardHeader" in "DashboardHeader"
 import Sidebar from '../../components/dashboard/common/Sidebar';
 import OverviewTab from '../../components/dashboard/patient/OverviewTab';
 import AppointmentsTab from '../../components/dashboard/patient/AppointmentsTab';

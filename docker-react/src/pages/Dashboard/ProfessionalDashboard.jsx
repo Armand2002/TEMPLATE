@@ -1,8 +1,8 @@
 // File: TEMPLATE/docker-react/src/pages/Dashboard/ProfessionalDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DashboardHeader from '../../components/dashboard/common/DashboardHeader';
-import Sidebar from '../../components/dashboard/common/Sidebar';
+import DashboardHeader from '../../components/dashboard/common/DashboardHeader'; // Corretto il percorso
+import Sidebar from '../../components/dashboard/common/Sidebar'; // Corretto il percorso
 import OverviewTab from '../../components/dashboard/professional/OverviewTab';
 import AppointmentsTab from '../../components/dashboard/professional/AppointmentsTab';
 import PatientsTab from '../../components/dashboard/professional/PatientsTab';
@@ -87,7 +87,7 @@ const ProfessionalDashboard = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Caricamento dashboard...</p>
+        <p className="text-gray-500">Caricamento Dashboard...</p>
       </div>
     );
   }

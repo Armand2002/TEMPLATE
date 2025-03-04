@@ -152,8 +152,8 @@ const BookingPage = () => {
     appointments.push(booking);
     localStorage.setItem('userAppointments', JSON.stringify(appointments));
     
-    // Redirect alla dashboard con messaggio di successo
-    navigate('/dashboard/paziente', { 
+    // Redirect alla Dashboard con messaggio di successo
+    navigate('/Dashboard/paziente', { 
       state: { 
         notification: {
           type: 'success',
@@ -524,8 +524,8 @@ const BookingPage = () => {
     appointments.push(booking);
     localStorage.setItem('userAppointments', JSON.stringify(appointments));
     
-    // Redirect alla dashboard con messaggio di successo
-    navigate('/dashboard/paziente', { 
+    // Redirect alla Dashboard con messaggio di successo
+    navigate('/Dashboard/paziente', { 
       state: { 
         notification: {
           type: 'success',
