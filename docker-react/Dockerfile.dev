@@ -4,8 +4,17 @@ WORKDIR '/app'
 
 COPY package.json ./
 COPY package-lock.json ./
+
+# Installa le dipendenze specifiche
+RUN npm install @stripe/react-stripe-js @stripe/stripe-js axios date-fns lucide-react react-hot-toast react-router-dom
+
+# Installa le devDependencies
+RUN npm install -D autoprefixer postcss tailwindcss
+
+# Installa le altre dipendenze dal package.json
 RUN npm install
 
+# Inizializza Tailwind CSS
 RUN npx tailwindcss init -p
 
 COPY . .

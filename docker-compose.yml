@@ -63,9 +63,9 @@ services:
       - "8005:8005"
     environment:
       - DATABASE_URL=sqlite:///./payment.db
-      - STRIPE_SECRET_KEY=sk_test_51...  # Usa una chiave di test
-      - STRIPE_WEBHOOK_SECRET=whsec_...  # Genera un webhook per test
-      - STRIPE_PUBLISHABLE_KEY=pk_test_51...  # Per il frontend
+      - STRIPE_SECRET_KEY=sk_test_51Qwl3g4bGuhP8JnHeiJ18EBTckWHYTSWsSJze09VsQEgRIfs5cC31kPVsavzGnokIQMlV8L5GmbATmn3CN9u3qjE00csdxrv2c  # Usa una chiave di test
+      - STRIPE_WEBHOOK_SECRET=  # Genera un webhook per test
+      - STRIPE_PUBLISHABLE_KEY=pk_test_51Qwl3g4bGuhP8JnHdmOoePEpNDmuQqc5N9iNOX2esXoc4vnBfxSTYqXHFreVOt0uU0vnsNb4rP56kUw0FYHbiYcN00fJYFxBga  # Per il frontend
     networks:
       - healtmatch-network
 

@@ -12,7 +12,8 @@ import './index.css';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe('pk_test_51your_publishable_key');
+// Chiave pubblica di Stripe
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 // Componente per rotte protette
 const ProtectedRoute = ({ element, allowedUserType }) => {
