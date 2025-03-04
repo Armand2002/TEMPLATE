@@ -9,6 +9,11 @@ import ProfessionalDashboard from './pages/Dashboard/ProfessionalDashboard';
 import { isAuthenticated, isProfessional } from './services/auth';
 import SearchPage from './pages/Search/index'; // Se usi index.jsx nella cartella
 import './index.css';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe('pk_test_51your_publishable_key');
+
 // Componente per rotte protette
 const ProtectedRoute = ({ element, allowedUserType }) => {
   const user = JSON.parse(localStorage.getItem('authUser') || '{}');
@@ -21,21 +26,23 @@ const ProtectedRoute = ({ element, allowedUserType }) => {
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route 
-          path="/Dashboard/paziente" 
-          element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
-        />
-        <Route 
-          path="/Dashboard/professionista" 
-          element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
-        />
-        <Route path="*" element={<div className="p-8">Pagina non trovata</div>} />
-      </Routes>
+      <Elements stripe={stripePromise}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route 
+            path="/Dashboard/paziente" 
+            element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
+          />
+          <Route 
+            path="/Dashboard/professionista" 
+            element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
+          />
+          <Route path="*" element={<div className="p-8">Pagina non trovata</div>} />
+        </Routes>
+      </Elements>
     </Router>
   );
 }

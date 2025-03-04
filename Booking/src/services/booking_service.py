@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 from src.models.booking_model import Booking, BookingSchema, BookingUpdateSchema
 import httpx
 from typing import Dict, Any
+from fastapi import HTTPException
+
+PAYMENT_SERVICE_URL = "http://payment-service:8005"
 
 class BookingService:
     def __init__(self, db_session):
@@ -76,3 +79,44 @@ def delete_booking(booking_id: int, db: Session):
         db.commit()
         return True
     return False
+
+# Booking/src/services/booking_service.py (aggiorna)
+async def create_complete_booking(booking_data, user_id, db: Session):
+    """Crea una prenotazione completa con pagamento."""
+    # 1. Crea la prenotazione
+    booking = create_booking(booking_data, db)
+    
+    try:
+        # 2. Crea l'intent di pagamento
+        async with httpx.AsyncClient() as client:
+            payment_response = await client.post(
+                f"{PAYMENT_SERVICE_URL}/api/v1/stripe/create-payment-intent",
+                json={
+                    "booking_id": booking.id,
+                    "client_id": user_id,
+                    "professional_id": booking_data.professional_id,
+                    "amount": booking_data.amount,
+                    "currency": "eur"
+                }
+            )
+            
+            if payment_response.status_code != 200:
+                # Se il pagamento fallisce, annulla la prenotazione
+                delete_booking(booking.id, db)
+                raise HTTPException(status_code=400, detail="Errore nella creazione del pagamento")
+            
+            payment_intent = payment_response.json()
+            
+            # Aggiorna la prenotazione con l'ID dell'intent di pagamento
+            booking.payment_intent_id = payment_intent["id"]
+            booking.payment_status = "pending"
+            db.commit()
+            
+            return {
+                "booking": booking,
+                "payment_intent": payment_intent
+            }
+    except Exception as e:
+        # In caso di errore, annulla la prenotazione
+        delete_booking(booking.id, db)
+        raise HTTPException(status_code=500, detail=f"Errore: {str(e)}")

@@ -15,6 +15,9 @@ class Booking(Base):
     service_id = Column(Integer, nullable=False)
     date_time = Column(DateTime, nullable=False)
     status = Column(String, default="pending")  # pending, confirmed, completed, cancelled
+    payment_intent_id = Column(String, nullable=True)
+    payment_status = Column(String, nullable=True)
+    amount = Column(Integer, nullable=True)  # in centesimi
 
 # Schema per la validazione dei dati in ingresso/uscita
 class BookingSchema(BaseModel):
