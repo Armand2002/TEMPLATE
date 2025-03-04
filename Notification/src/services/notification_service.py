@@ -2,10 +2,10 @@ from sqlalchemy.orm import Session
 import datetime
 import json
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
 from ..models.notification_model import Notification, NotificationCreate
 
-# Configurazione del logger
+# Logger configuration
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -16,9 +16,9 @@ def create_notification(db: Session, notification_data: NotificationCreate) -> N
             recipient_id=notification_data.recipient_id,
             sender_id=notification_data.sender_id,
             title=notification_data.title,
-            message=notification_data.message,
+            content=notification_data.content,  # Corretto da message a content
             type=notification_data.type,
-            metadata=notification_data.metadata
+            meta_data=notification_data.meta_data  # Corretto da metadata a meta_data
         )
         
         db.add(notification)
@@ -43,7 +43,7 @@ def get_user_notifications(
     query = db.query(Notification).filter(Notification.recipient_id == user_id)
     
     if unread_only:
-        query = query.filter(Notification.read == False)
+        query = query.filter(Notification.is_read == False)  # Corretto da read a is_read
     
     notifications = query.order_by(Notification.created_at.desc()).offset(skip).limit(limit).all()
     return notifications
@@ -62,7 +62,7 @@ def mark_notification_as_read(db: Session, notification_id: int, user_id: int) -
     if not notification:
         return False
     
-    notification.read = True
+    notification.is_read = True  # Corretto da read a is_read
     notification.read_at = datetime.datetime.utcnow()
     
     try:
@@ -98,19 +98,19 @@ def get_unread_count(db: Session, user_id: int) -> int:
     """Ottiene il conteggio delle notifiche non lette di un utente."""
     return db.query(Notification).filter(
         Notification.recipient_id == user_id,
-        Notification.read == False
+        Notification.is_read == False  # Corretto da read a is_read
     ).count()
 
 def mark_all_as_read(db: Session, user_id: int) -> int:
     """Segna tutte le notifiche di un utente come lette."""
     notifications = db.query(Notification).filter(
         Notification.recipient_id == user_id,
-        Notification.read == False
+        Notification.is_read == False  # Corretto da read a is_read
     ).all()
     
     count = 0
     for notification in notifications:
-        notification.read = True
+        notification.is_read = True  # Corretto da read a is_read
         notification.read_at = datetime.datetime.utcnow()
         count += 1
     

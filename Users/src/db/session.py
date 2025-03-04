@@ -1,25 +1,22 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 import os
-from dotenv import load_dotenv
 
-# Carica variabili d'ambiente
-load_dotenv()
+# Percorso assoluto per il database
+base_dir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+data_dir = os.path.join(base_dir, "data")
+os.makedirs(data_dir, exist_ok=True)
+db_path = os.path.join(data_dir, "user.db")  # CORRETTO: nome specifico per questo servizio
 
-# Configurazione database
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./user.db")
+# URL del database
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{db_path}")
 
 # Creazione del motore di connessione al database
-engine = create_engine(
-    DATABASE_URL, 
-    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
-)
-
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 # Creazione della sessione del database
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base per la dichiarazione delle tabelle
+# Creazione della base per la dichiarazione delle tabelle
 Base = declarative_base()
 
 # Funzione per ottenere una sessione del database
