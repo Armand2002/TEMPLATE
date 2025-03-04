@@ -1,29 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const SearchBar = ({ onSearch, initialFilters = {} }) => {
-  const [searchFilters, setSearchFilters] = useState({
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState({
     specialty: initialFilters.specialty || '',
     location: initialFilters.location || '',
     date: initialFilters.date || '',
     availability: initialFilters.availability || 'any'
-    // Rimosso insurances
   });
-
-  // Aggiorna i filtri quando cambiano quelli iniziali
-  useEffect(() => {
-    setSearchFilters({
-      specialty: initialFilters.specialty || '',
-      location: initialFilters.location || '',
-      date: initialFilters.date || '',
-      availability: initialFilters.availability || 'any'
-      // Rimosso insurances
-    });
-  }, [initialFilters]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSearchFilters(prev => ({
+    setFilters(prev => ({
       ...prev,
       [name]: value
     }));
@@ -31,86 +21,101 @@ const SearchBar = ({ onSearch, initialFilters = {} }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSearch(searchFilters);
+    
+    // Filtra i parametri vuoti
+    const queryParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && value !== 'any') {
+        queryParams.append(key, value);
+      }
+    });
+    
+    // Naviga alla pagina di ricerca con i parametri
+    navigate(`/search?${queryParams.toString()}`);
+    
+    // Se è stata fornita una funzione onSearch, chiamala
+    if (onSearch) {
+      onSearch(filters);
+    }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="w-full bg-white rounded-lg shadow-md p-4">
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Ricerca specialità o prestazione */}
-          <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={20} className="text-gray-400" />
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label htmlFor="specialty" className="block text-sm font-medium text-gray-700 mb-1">
+              Specialità
+            </label>
             <input
               type="text"
+              id="specialty"
               name="specialty"
-              placeholder="Specialista o prestazione (es. Cardiologo, Visita pediatrica)"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              value={searchFilters.specialty}
+              value={filters.specialty}
               onChange={handleChange}
+              placeholder="Es. Cardiologo, Psicologo..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-
-          {/* Ricerca località */}
-          <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MapPin size={20} className="text-gray-400" />
-            </div>
+          
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+              Località
+            </label>
             <input
               type="text"
+              id="location"
               name="location"
-              placeholder="Città o indirizzo"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              value={searchFilters.location}
+              value={filters.location}
               onChange={handleChange}
+              placeholder="Es. Milano, Roma..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-
-          {/* Pulsante di ricerca */}
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center"
-          >
-            <Search size={20} className="mr-2" />
-            <span>Cerca</span>
-          </button>
-        </div>
-
-        {/* Filtri aggiuntivi (opzionali) */}
-        <div className="flex flex-wrap gap-4 mt-4">
-          {/* Selezione data */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar size={16} className="text-gray-400" />
-            </div>
+          
+          <div>
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+              Data
+            </label>
             <input
               type="date"
+              id="date"
               name="date"
-              className="pl-10 pr-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              value={searchFilters.date}
+              value={filters.date}
               onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-
-          {/* Disponibilità */}
-          <select
-            name="availability"
-            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            value={searchFilters.availability}
-            onChange={handleChange}
-          >
-            <option value="any">Qualsiasi disponibilità</option>
-            <option value="today">Disponibile oggi</option>
-            <option value="tomorrow">Disponibile domani</option>
-            <option value="week">Disponibile questa settimana</option>
-          </select>
           
-          {/* Rimosso il selettore delle convenzioni */}
+          <div>
+            <label htmlFor="availability" className="block text-sm font-medium text-gray-700 mb-1">
+              Disponibilità
+            </label>
+            <select
+              id="availability"
+              name="availability"
+              value={filters.availability}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="any">Qualsiasi</option>
+              <option value="today">Oggi</option>
+              <option value="tomorrow">Domani</option>
+              <option value="week">Questa settimana</option>
+              <option value="weekend">Weekend</option>
+            </select>
+          </div>
         </div>
         
-        {/* Rimossi i badge delle convenzioni selezionate */}
+        <div className="mt-4">
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium flex items-center justify-center"
+          >
+            <Search className="mr-2" size={20} />
+            Cerca professionisti
+          </button>
+        </div>
       </form>
     </div>
   );

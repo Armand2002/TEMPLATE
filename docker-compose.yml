@@ -21,6 +21,8 @@ services:
       - "8001:8001"
     environment:
       - DATABASE_URL=sqlite:///./auth.db
+      - JWT_SECRET_KEY=your_production_secret_key
+      - JWT_EXPIRE_MINUTES=30
     networks:
       - healtmatch-network
 

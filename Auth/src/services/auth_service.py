@@ -2,14 +2,15 @@ from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from src.models.user_model import User, SessionLocal
 from passlib.context import CryptContext
+import os  # Aggiungi questo import
 
 # Configurazione per hashing delle password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Chiave segreta e algoritmo per la generazione del token JWT
-SECRET_KEY = "your_secret_key"
+# Usa variabili d'ambiente per chiavi sensibili
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your_secret_key_development_only")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Durata del token in minuti
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "30"))
 
 def hash_password(password: str) -> str:
     """Crea un hash per la password."""
@@ -60,8 +61,10 @@ def authenticate_user(email: str, password: str):
     user = db.query(User).filter(User.email == email).first()
     if not user:
         return None
-    if not verify_password(password, user.password):
+    
+    if not verify_password(password, user.hashed_password):  # Cambiato da user.password
         return None
+    
     # Genera il token JWT
     token = create_access_token({"sub": user.email, "role": user.role})
     return {"access_token": token, "user": {"id": user.id, "name": user.name, "role": user.role}}
