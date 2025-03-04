@@ -9,7 +9,7 @@ router = APIRouter()
 BOOKING_SERVICE_URL = "http://booking-service:8002/api/v1"
 
 # URL del servizio di pagamento
-PAYMENT_SERVICE_URL = "http://payment-service:8003/api/v1"
+PAYMENT_SERVICE_URL = "http://payment-service:8005/api/v1"
 
 # URL del servizio di notifiche
 NOTIFICATION_SERVICE_URL = "http://notification-service:8004/api/v1"
@@ -21,7 +21,7 @@ async def create_booking(booking_data: Dict[str, Any], current_user: Dict[str, A
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{BOOKING_SERVICE_URL}/bookings",
-                json={**booking_data, "user_id": current_user["id"]}
+                json={**booking_data, "client_id": current_user["id"]}
             )
             if response.status_code >= 400:
                 raise HTTPException(status_code=response.status_code, detail=response.json())
@@ -133,7 +133,7 @@ async def create_complete_booking(
             
             # 3. Crea l'intento di pagamento
             payment_response = await client.post(
-                f"{PAYMENT_SERVICE_URL}/api/v1/stripe/create-payment-intent",
+                f"{PAYMENT_SERVICE_URL}/stripe/create-payment-intent",
                 json={
                     "booking_id": booking["id"],
                     "client_id": current_user["id"],
@@ -154,9 +154,9 @@ async def create_complete_booking(
             # 4. Invia notifiche
             # Notifica al cliente
             await client.post(
-                f"{NOTIFICATION_SERVICE_URL}/api/v1/send-notification",
+                f"{NOTIFICATION_SERVICE_URL}/notifications",
                 json={
-                    "user_id": current_user["id"],
+                    "recipient_id": current_user["id"],
                     "type": "booking",
                     "title": "Prenotazione confermata",
                     "message": f"La tua prenotazione per {booking_data['service_name']} il {booking_data['date_time']} è stata confermata."
@@ -165,9 +165,9 @@ async def create_complete_booking(
             
             # Notifica al professionista
             await client.post(
-                f"{NOTIFICATION_SERVICE_URL}/api/v1/send-notification",
+                f"{NOTIFICATION_SERVICE_URL}/notifications",
                 json={
-                    "user_id": booking_data["professional_id"],
+                    "recipient_id": booking_data["professional_id"],
                     "type": "booking",
                     "title": "Nuova prenotazione",
                     "message": f"Hai una nuova prenotazione per {booking_data['service_name']} il {booking_data['date_time']}."

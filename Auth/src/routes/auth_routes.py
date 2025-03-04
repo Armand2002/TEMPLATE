@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 import httpx
 from typing import Dict, Any
-from ..auth.jwt_auth import get_current_user, get_current_active_user
 
 router = APIRouter()
 
@@ -36,12 +35,26 @@ async def register(user_data: Dict[str, Any]):
     except httpx.RequestError:
         raise HTTPException(status_code=503, detail="Servizio di autenticazione non disponibile")
 
-@router.post("/verify")
+@router.post("/verify-token")
 async def verify_token(token_data: Dict[str, Any]):
     """Verifica un token JWT."""
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(f"{AUTH_SERVICE_URL}/auth/verify", json=token_data)
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail=response.json())
+                
+            return response.json()
+    except httpx.RequestError:
+        raise HTTPException(status_code=503, detail="Servizio di autenticazione non disponibile")
+
+@router.post("/refresh-token")
+async def refresh_token(token_data: Dict[str, Any]):
+    """Rinnova un token JWT."""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f"{AUTH_SERVICE_URL}/auth/refresh", json=token_data)
             
             if response.status_code != 200:
                 raise HTTPException(status_code=response.status_code, detail=response.json())
