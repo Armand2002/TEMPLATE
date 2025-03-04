@@ -8,10 +8,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Middleware CORS essenziale
+# Middleware CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In produzione limitare alle origini specifiche
+    allow_origins=["*"],  # In produzione, limita alle origini specifiche
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,6 +20,6 @@ app.add_middleware(
 # Registra il router principale
 app.include_router(api_router, prefix="/api/v1")
 
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
+@app.get("/status")
+async def status():
+    return {"status": "API Gateway is running"}

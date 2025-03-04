@@ -1,12 +1,18 @@
 from fastapi import APIRouter, HTTPException, Depends, Header
 import httpx
 from typing import Dict, Any, Optional, List
-from ..auth.jwt_auth import get_current_user
+from ..auth.jwt_auth import get_current_user, get_current_active_user
 
 router = APIRouter()
 
 # URL del servizio di prenotazioni
 BOOKING_SERVICE_URL = "http://booking-service:8002/api/v1"
+
+# URL del servizio di pagamento
+PAYMENT_SERVICE_URL = "http://payment-service:8003/api/v1"
+
+# URL del servizio di notifiche
+NOTIFICATION_SERVICE_URL = "http://notification-service:8004/api/v1"
 
 @router.post("/", response_model=Dict[str, Any], tags=["Bookings"])
 async def create_booking(booking_data: Dict[str, Any], current_user: Dict[str, Any] = Depends(get_current_user)):

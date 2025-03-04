@@ -33,17 +33,16 @@ async def health_check():
     health_status = {}
     
     async with httpx.AsyncClient() as client:
-        # Controlla lo stato di ogni servizio
         for service_name, url in {
-            "auth": AUTH_SERVICE_URL,
-            "users": USERS_SERVICE_URL,
-            "booking": BOOKING_SERVICE_URL, 
-            "catalog": CATALOG_SERVICE_URL,
-            "payment": PAYMENT_SERVICE_URL,
-            "notification": NOTIFICATION_SERVICE_URL
+            "auth": f"{AUTH_SERVICE_URL}/status",
+            "users": f"{USERS_SERVICE_URL}/status",
+            "booking": f"{BOOKING_SERVICE_URL}/status", 
+            "catalog": f"{CATALOG_SERVICE_URL}/status",
+            "payment": f"{PAYMENT_SERVICE_URL}/status",
+            "notification": f"{NOTIFICATION_SERVICE_URL}/status"
         }.items():
             try:
-                response = await client.get(f"{url}/status")
+                response = await client.get(url, timeout=2.0)
                 health_status[service_name] = "online" if response.status_code == 200 else "degraded"
             except:
                 health_status[service_name] = "offline"

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 import httpx
 from typing import Dict, Any, List
-from ..auth.jwt_auth import get_current_user
+from ..auth.jwt_auth import get_current_user, get_current_active_user
 
 router = APIRouter()
 NOTIFICATION_SERVICE_URL = "http://notification-service:8004/api/v1"
