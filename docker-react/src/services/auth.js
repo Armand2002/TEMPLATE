@@ -4,36 +4,42 @@
 
 // Simula una chiamata API di login
 export const login = async (email, password, userType) => {
-    try {
-      // In produzione, questa sarebbe una vera chiamata API
-      console.log(`Login attempt: ${email}, ${userType}`);
-      
-      // Simula una risposta dal server dopo 1 secondo
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulazione credenziali per testing
-      if (email === 'test@example.com' && password === 'password123') {
+  // Simulazione di chiamata API
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // Credenziali per paziente
+      if (email === 'paziente@example.com' && password === 'password123' && userType === 'paziente') {
         const userData = {
           id: '123456',
-          name: userType === 'paziente' ? 'Mario Rossi' : 'Dott. Mario Rossi',
+          name: 'Mario Rossi',
           email,
-          userType,
-          token: 'fake-jwt-token-12345'
+          userType: 'paziente',
+          token: 'fake-jwt-token-paziente-12345'
         };
-        
-        // Salva le informazioni di autenticazione
         localStorage.setItem('authUser', JSON.stringify(userData));
         localStorage.setItem('authToken', userData.token);
-        
-        return userData;
-      } else {
-        throw new Error('Credenziali non valide');
+        resolve(userData);
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
-  };
+      // Credenziali per professionista
+      else if (email === 'dottore@example.com' && password === 'password123' && userType === 'professionista') {
+        const userData = {
+          id: '789012',
+          name: 'Dott. Antonio Bianchi',
+          email,
+          userType: 'professionista',
+          token: 'fake-jwt-token-professionista-12345'
+        };
+        localStorage.setItem('authUser', JSON.stringify(userData));
+        localStorage.setItem('authToken', userData.token);
+        resolve(userData);
+      }
+      // Credenziali non valide
+      else {
+        reject(new Error('Credenziali non valide'));
+      }
+    }, 800); // Simula ritardo di rete
+  });
+};
   
   // Verifica se l'utente è autenticato
   export const isAuthenticated = () => {

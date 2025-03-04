@@ -77,6 +77,14 @@ const PatientDashboard = () => {
     { id: 'settings', label: 'Impostazioni', icon: 'settings' }
   ];
   
+  // Rimuovi questa riga che causa l'errore
+  // const tabsToRender = tabs || [
+  //   { id: 'overview', name: 'Panoramica' },
+  //   { id: 'appointments', name: 'Appuntamenti' },
+  //   { id: 'patients', name: 'Pazienti' },    
+  //   { id: 'settings', name: 'Impostazioni' },
+  // ];
+
   // Renderer condizionale in base allo stato di caricamento
   if (isLoading) {
     return (
@@ -105,11 +113,11 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-100">
       <Sidebar 
-        links={sidebarLinks} 
-        activeLink={activeTab} 
-        onLinkClick={setActiveTab} 
+        tabs={sidebarLinks.map(link => ({ id: link.id, name: link.label }))} 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
       />
       
       <div className="flex-1 flex flex-col overflow-hidden">
