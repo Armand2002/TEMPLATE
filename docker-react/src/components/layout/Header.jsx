@@ -11,8 +11,8 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Determina il link della dashboard
-  const dashboardLink = isProfessional() ? '/dashboard/professionista' : '/dashboard/paziente';
+  // Determina il link della Dashboard
+  const DashboardLink = isProfessional() ? '/dashboard/professionista' : '/dashboard/paziente';
 
   // Gestisce la navigazione alle sezioni dell'homepage
   const navigateToSection = (sectionId) => {
@@ -60,7 +60,7 @@ const Header = () => {
           </div>
           <div className="hidden md:flex items-center">
             {authenticated ? (
-              <Link to={dashboardLink} className="text-blue-600 hover:text-blue-800 font-medium">
+              <Link to={DashboardLink} className="text-blue-600 hover:text-blue-800 font-medium">
                 La mia area personale
               </Link>
             ) : (
@@ -126,7 +126,7 @@ const Header = () => {
             <div className="px-2 space-y-1">
               {authenticated ? (
                 <Link
-                  to={dashboardLink}
+                  to={DashboardLink}
                   className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-gray-50"
                   onClick={() => setMobileMenuOpen(false)}
                 >

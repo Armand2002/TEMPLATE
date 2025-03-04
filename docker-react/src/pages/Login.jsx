@@ -20,9 +20,9 @@ const Login = () => {
       
       // Reindirizzamento in base al tipo di utente
       if (user.userType === 'paziente') {
-        navigate('/dashboard/paziente');
+        navigate('/Dashboard/paziente');
       } else {
-        navigate('/dashboard/professionista');
+        navigate('/Dashboard/professionista');
       }
     } catch (error) {
       console.error('Login failed:', error);

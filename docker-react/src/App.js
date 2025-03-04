@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Importa gli stili CSS
+import 'react-toastify/dist/ReactToastify.css';
 import HomePage from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,23 +10,24 @@ import ProfessionalDashboard from './pages/Dashboard/ProfessionalDashboard';
 import SearchPage from './pages/Search/index';
 import { isAuthenticated, isProfessional } from './services/auth';
 import './index.css';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+// Chiave pubblica di Stripe
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+
+// Componente per rotte protette
+const ProtectedRoute = ({ element, allowedUserType }) => {
+  const user = JSON.parse(localStorage.getItem('authUser') || '{}');
+  const authenticated = isAuthenticated();
+  const hasCorrectRole = !allowedUserType || user.userType === allowedUserType;
+  
+  return authenticated && hasCorrectRole ? element : <Navigate to="/login" />;
+};
 
 function App() {
-  // Funzione per reindirizzare alla dashboard corretta
-  const DashboardRouter = () => {
-    if (!isAuthenticated()) {
-      return <Navigate to="/login" />;
-    }
-    
-    // Controlla il tipo di utente e reindirizza di conseguenza
-    return isProfessional() ? 
-      <Navigate to="/dashboard/professionista" replace /> : 
-      <Navigate to="/dashboard/paziente" replace />;
-  };
-
   return (
     <Router>
-      {/* ToastContainer per mostrare le notifiche in tutta l'app */}
       <ToastContainer 
         position="top-right"
         autoClose={3000}
@@ -39,18 +40,23 @@ function App() {
         pauseOnHover
       />
       
-      <Routes>
-        {/* ... rotte esistenti */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<DashboardRouter />} />
-        {/* Rimuovi i reindirizzamenti circolari */}
-        <Route path="/dashboard/paziente" element={<PatientDashboard />} />
-        <Route path="/dashboard/professionista" element={<ProfessionalDashboard />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+      <Elements stripe={stripePromise}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route 
+            path="/dashboard/paziente" 
+            element={<ProtectedRoute element={<PatientDashboard />} allowedUserType="paziente" />} 
+          />
+          <Route 
+            path="/dashboard/professionista" 
+            element={<ProtectedRoute element={<ProfessionalDashboard />} allowedUserType="professionista" />} 
+          />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Elements>
     </Router>
   );
 }

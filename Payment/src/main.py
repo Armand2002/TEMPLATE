@@ -1,7 +1,11 @@
 from fastapi import FastAPI
-app = FastAPI()
+from src.routes.payment_routes import router as payment_router
 
-# Definizione di endpoint specifici per il servizio
+app = FastAPI(title="HealthMatch Payment Service")
+
+# Registra il router
+app.include_router(payment_router)
+
 @app.get("/status")
 def status():
     return {"status": "ok"}
