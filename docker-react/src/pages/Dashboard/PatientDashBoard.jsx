@@ -30,7 +30,7 @@ const PatientDashboard = () => {
       navigate('/dashboard/professionista');
       return;
     }
-    
+     
     // Verifica se l'utente è autenticato e NON è un professionista
     if (!isAuthenticated()) {
       navigate('/login');
