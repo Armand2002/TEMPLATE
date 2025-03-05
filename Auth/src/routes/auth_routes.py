@@ -1,42 +1,32 @@
-from fastapi import APIRouter, HTTPException, Depends
+# Correzione 3: src/routes/auth_routes.py
+# Questo file risolve i problemi di coerenza tra routes e controller
+
+from fastapi import APIRouter, HTTPException, Depends, Body
 from typing import Dict, Any
-from ..controllers.auth_controller import login_user, register_user, verify_token_validity, refresh_access_token
+from ..controllers.auth_controller import login, register, verify, refresh
 
 router = APIRouter()
 
 @router.post("/login")
-async def login(user_data: Dict[str, Any]):
+async def login_route(user_data: Dict[str, Any] = Body(...)):
     """Effettua il login di un utente."""
-    result = login_user(user_data.get("email"), user_data.get("password"))
-    if "error" in result:
-        raise HTTPException(status_code=401, detail=result["error"])
+    result = login(user_data)
     return result
 
 @router.post("/register")
-async def register(user_data: Dict[str, Any]):
+async def register_route(user_data: Dict[str, Any] = Body(...)):
     """Registra un nuovo utente."""
-    result = register_user(
-        name=user_data.get("name"), 
-        email=user_data.get("email"), 
-        password=user_data.get("password"), 
-        role=user_data.get("role", "patient")
-    )
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
+    result = register(user_data)
     return result
 
 @router.post("/verify")
-async def verify_token(token_data: Dict[str, Any]):
+async def verify_token_route(token_data: Dict[str, Any] = Body(...)):
     """Verifica un token JWT."""
-    result = verify_token_validity(token_data.get("token"))
-    if result["status"] == "invalid":
-        raise HTTPException(status_code=401, detail=result["message"])
+    result = verify(token_data)
     return result
 
 @router.post("/refresh")
-async def refresh_token(token_data: Dict[str, Any]):
+async def refresh_token_route(token_data: Dict[str, Any] = Body(...)):
     """Rinnova un token JWT."""
-    result = refresh_access_token(token_data.get("token"))
-    if "error" in result:
-        raise HTTPException(status_code=401, detail=result["error"])
+    result = refresh(token_data)
     return result

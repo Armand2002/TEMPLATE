@@ -1,8 +1,12 @@
+# Correzione 1: src/services/auth_service.py
+# Questo file corregge il problema dell'utilizzo del campo "password" invece di "hashed_password"
+# e corregge la funzione register_user
+
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 from src.models.user_model import User, SessionLocal
 from passlib.context import CryptContext
-import os  # Aggiungi questo import
+import os
 
 # Configurazione per hashing delle password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -37,8 +41,8 @@ def verify_token(token: str):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise JWTError
-        return payload
+            return {"status": "invalid", "message": "Invalid token"}
+        return {"status": "valid", "payload": payload}
     except JWTError:
         return {"status": "invalid", "message": "Invalid token"}
 
@@ -49,7 +53,7 @@ def refresh_token(token: str):
         email: str = payload.get("sub")
         role: str = payload.get("role")
         if email is None or role is None:
-            raise JWTError
+            return {"error": "Invalid token"}
         new_token = create_access_token({"sub": email, "role": role})
         return new_token
     except JWTError:
@@ -75,13 +79,22 @@ def authenticate_user(email: str, password: str):
 def register_user(name: str, email: str, password: str, role: str):
     """Registra un nuovo utente."""
     db = SessionLocal()
-    existing_user = db.query(User).filter(User.email == email).first()
-    if existing_user:
-        return {"error": "Email already registered"}
-    
-    hashed_password = hash_password(password)
-    new_user = User(name=name, email=email, password=hashed_password, role=role)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return {"status": "success", "user_id": new_user.id}
+    try:
+        existing_user = db.query(User).filter(User.email == email).first()
+        if existing_user:
+            return {"error": "Email already registered"}
+        
+        # Hash della password
+        hashed_password = hash_password(password)
+        
+        # Crea il nuovo utente con il campo corretto hashed_password
+        new_user = User(name=name, email=email, hashed_password=hashed_password, role=role)
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return {"status": "success", "user_id": new_user.id}
+    except Exception as e:
+        db.rollback()
+        return {"error": f"Database error: {str(e)}"}
+    finally:
+        db.close()
