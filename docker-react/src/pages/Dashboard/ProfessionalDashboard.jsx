@@ -1,8 +1,7 @@
-// File: TEMPLATE/docker-react/src/pages/Dashboard/ProfessionalDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DashboardHeader from '../../components/dashboard/common/DashboardHeader'; // Corretto il percorso
-import Sidebar from '../../components/dashboard/common/Sidebar'; // Corretto il percorso
+import DashboardHeader from '../../components/dashboard/common/DashboardHeader';
+import Sidebar from '../../components/dashboard/common/Sidebar';
 import OverviewTab from '../../components/dashboard/professional/OverviewTab';
 import AppointmentsTab from '../../components/dashboard/professional/AppointmentsTab';
 import PatientsTab from '../../components/dashboard/professional/PatientsTab';
@@ -18,6 +17,14 @@ const ProfessionalDashboard = () => {
   const [patients, setPatients] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Definizione dei tabs per la sidebar
+  const tabs = [
+    { id: 'overview', name: 'Panoramica' },
+    { id: 'appointments', name: 'Appuntamenti' },
+    { id: 'patients', name: 'Pazienti' },
+    { id: 'settings', name: 'Impostazioni' },
+  ];
   
   useEffect(() => {
     // Verifico autenticazione
@@ -87,7 +94,7 @@ const ProfessionalDashboard = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-500">Caricamento Dashboard...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -124,24 +131,27 @@ const ProfessionalDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardHeader 
-        user={user}
-        notifications={notifications}
-        onLogout={handleLogout}
-        title="Dashboard Professionista" 
-        subtitle={`Benvenuto, Dr. ${user?.name || ''}`}
-      />
+    <div className="min-h-screen flex bg-gray-50">
+      <div className="w-64 overflow-y-auto">
+        <Sidebar
+          tabs={tabs}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+      </div>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="md:w-1/4">
-            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-          </div>
-          <div className="md:w-3/4">
-            {renderContent()}
-          </div>
-        </div>
+      <div className="flex-1 flex flex-col">
+        <DashboardHeader 
+          user={user}
+          notifications={notifications}
+          onLogout={handleLogout}
+          title="Dashboard Professionista" 
+          subtitle={`Benvenuto, Dr. ${user?.name || ''}`}
+        />
+        
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          {renderContent()}
+        </main>
       </div>
     </div>
   );

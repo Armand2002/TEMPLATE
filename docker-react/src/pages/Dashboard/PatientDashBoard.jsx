@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DashboardHeader from '../../components/dashboard/common/DashboardHeader'; // Corretto "DashBoardHeader" in "DashboardHeader"
+import DashboardHeader from '../../components/dashboard/common/DashboardHeader';
 import Sidebar from '../../components/dashboard/common/Sidebar';
 import OverviewTab from '../../components/dashboard/patient/OverviewTab';
 import AppointmentsTab from '../../components/dashboard/patient/AppointmentsTab';
@@ -18,6 +18,15 @@ const PatientDashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
+  // Definizione dei tabs per la sidebar
+  const tabs = [
+    { id: 'overview', name: 'Panoramica' },
+    { id: 'appointments', name: 'Appuntamenti' },
+    { id: 'health-records', name: 'Documenti Sanitari' },
+    { id: 'professionals', name: 'Professionisti' },
+    { id: 'settings', name: 'Impostazioni' },
+  ];
+  
   useEffect(() => {
     // Verifica se l'utente è autenticato
     if (!isAuthenticated()) {
@@ -26,18 +35,6 @@ const PatientDashboard = () => {
     }
     
     // Se l'utente è un professionista, reindirizza
-    if (isProfessional()) {
-      navigate('/dashboard/professionista');
-      return;
-    }
-     
-    // Verifica se l'utente è autenticato e NON è un professionista
-    if (!isAuthenticated()) {
-      navigate('/login');
-      return;
-    }
-    
-    // Se l'utente è un professionista, reindirizza alla dashboard corretta
     if (isProfessional()) {
       navigate('/dashboard/professionista');
       return;
@@ -80,23 +77,6 @@ const PatientDashboard = () => {
     setAppointments(appointments.filter(app => app.id !== appointmentId));
   };
   
-  // Sidebar links
-  const sidebarLinks = [
-    { id: 'overview', label: 'Panoramica', icon: 'layout' },
-    { id: 'appointments', label: 'Appuntamenti', icon: 'calendar' },
-    { id: 'health-records', label: 'Documenti Sanitari', icon: 'file-text' },
-    { id: 'professionals', label: 'Professionisti', icon: 'users' },
-    { id: 'settings', label: 'Impostazioni', icon: 'settings' }
-  ];
-  
-  // Rimuovi questa riga che causa l'errore
-  // const tabsToRender = tabs || [
-  //   { id: 'overview', name: 'Panoramica' },
-  //   { id: 'appointments', name: 'Appuntamenti' },
-  //   { id: 'patients', name: 'Pazienti' },    
-  //   { id: 'settings', name: 'Impostazioni' },
-  // ];
-
   // Renderer condizionale in base allo stato di caricamento
   if (isLoading) {
     return (
@@ -126,11 +106,13 @@ const PatientDashboard = () => {
  
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar 
-        tabs={sidebarLinks.map(link => ({ id: link.id, name: link.label }))} 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-      />
+      <div className="w-64 overflow-y-auto">
+        <Sidebar 
+          tabs={tabs} 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+        />
+      </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardHeader 

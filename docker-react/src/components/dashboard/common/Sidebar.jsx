@@ -1,8 +1,7 @@
 import React from 'react';
 import { Clipboard, Calendar, FileText, Users, Settings, Layout } from 'lucide-react';
 
-// Modifica la firma per accettare links e onLinkClick invece di tabs e setActiveTab
-const Sidebar = ({ activeLink, onLinkClick, links }) => {
+const Sidebar = ({ activeTab, setActiveTab, tabs }) => {
   // Mapping delle icone per i diversi tipi di tab
   const iconMapping = {
     'overview': <Layout size={18} />,
@@ -16,19 +15,18 @@ const Sidebar = ({ activeLink, onLinkClick, links }) => {
   return (
     <div className="bg-white shadow-sm rounded-lg">
       <ul className="py-2">
-        {/* Usa i links passati come prop invece di tabsToRender */}
-        {links && links.map((link) => (
-          <li key={link.id}>
+        {tabs && tabs.map((tab) => (
+          <li key={tab.id}>
             <button
-              onClick={() => onLinkClick(link.id)}
+              onClick={() => setActiveTab(tab.id)}
               className={`w-full flex items-center px-4 py-3 text-left ${
-                activeLink === link.id 
+                activeTab === tab.id 
                 ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
                 : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
-              <span className="mr-3">{iconMapping[link.id] || <Clipboard size={18} />}</span>
-              <span>{link.label}</span> {/* Cambiato da link.name a link.label */}
+              <span className="mr-3">{iconMapping[tab.id] || <Clipboard size={18} />}</span>
+              <span>{tab.name}</span>
             </button>
           </li>
         ))}
